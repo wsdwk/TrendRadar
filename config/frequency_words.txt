@@ -80,6 +80,10 @@ ai
 !gai
 人工智能
 
+Java
+Python
+Agent
+
 汽车
 自动驾驶
 
