@@ -1,3 +1,7 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Layers,
@@ -13,23 +17,35 @@ type NavItem = {
   href: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
-  active?: boolean;
+  /** 用于判定 active 的前缀；不填则按 href 全等匹配 */
+  matchPrefix?: string;
   disabled?: boolean;
 };
 
 const NAV: NavItem[] = [
-  { href: "/", label: "总览", icon: LayoutDashboard, active: true },
-  { href: "#", label: "平台", icon: Layers, disabled: true },
+  { href: "/", label: "总览", icon: LayoutDashboard },
+  { href: "/platforms", label: "平台", icon: Layers, matchPrefix: "/platforms" },
   { href: "#", label: "关键词", icon: Tag, disabled: true },
   { href: "#", label: "历史归档", icon: CalendarDays, disabled: true },
   { href: "#", label: "趋势", icon: LineChart, disabled: true },
   { href: "#", label: "设置", icon: Settings, disabled: true },
 ];
 
+function isActive(item: NavItem, pathname: string) {
+  if (item.disabled) return false;
+  if (item.matchPrefix) return pathname.startsWith(item.matchPrefix);
+  return pathname === item.href;
+}
+
 export function Sidebar() {
+  const pathname = usePathname() || "/";
+
   return (
     <aside className="hidden w-64 shrink-0 border-r border-border bg-card md:flex md:flex-col">
-      <div className="flex h-16 items-center gap-2 border-b border-border px-6">
+      <Link
+        href="/"
+        className="flex h-16 items-center gap-2 border-b border-border px-6"
+      >
         <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
           <Radar className="h-4 w-4" />
         </div>
@@ -37,33 +53,44 @@ export function Sidebar() {
           <p className="text-sm font-semibold text-foreground">TrendRadar</p>
           <p className="text-[11px] text-muted-foreground">趋势雷达</p>
         </div>
-      </div>
+      </Link>
 
       <nav className="flex-1 px-3 py-4">
         <ul className="flex flex-col gap-1">
           {NAV.map((item) => {
             const Icon = item.icon;
+            const active = isActive(item, pathname);
+            const inner = (
+              <>
+                <Icon className="h-4 w-4" />
+                <span>{item.label}</span>
+                {item.disabled && (
+                  <span className="ml-auto text-[10px] text-muted-foreground">
+                    Soon
+                  </span>
+                )}
+              </>
+            );
+
+            const className = cn(
+              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
+              active
+                ? "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground",
+              item.disabled && "cursor-not-allowed opacity-50 hover:bg-transparent"
+            );
+
             return (
               <li key={item.label}>
-                <a
-                  href={item.disabled ? undefined : item.href}
-                  aria-disabled={item.disabled}
-                  className={cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
-                    item.active
-                      ? "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                    item.disabled && "cursor-not-allowed opacity-50 hover:bg-transparent"
-                  )}
-                >
-                  <Icon className="h-4 w-4" />
-                  <span>{item.label}</span>
-                  {item.disabled && (
-                    <span className="ml-auto text-[10px] text-muted-foreground">
-                      Soon
-                    </span>
-                  )}
-                </a>
+                {item.disabled ? (
+                  <span className={className} aria-disabled>
+                    {inner}
+                  </span>
+                ) : (
+                  <Link href={item.href} className={className}>
+                    {inner}
+                  </Link>
+                )}
               </li>
             );
           })}
