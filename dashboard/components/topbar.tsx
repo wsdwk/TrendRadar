@@ -1,5 +1,6 @@
 import { Clock, Search } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
+import { CrawlButton } from "./crawl-button";
 
 type Props = {
   /** 显示的标题，默认"总览" */
@@ -45,6 +46,7 @@ export function Topbar({
         </div>
       )}
 
+      <CrawlButton />
       <ThemeToggle />
     </header>
   );
