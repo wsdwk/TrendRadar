@@ -1,0 +1,21 @@
+{
+  "name": "trendradar",
+  "private": true,
+  "description": "TrendRadar monorepo: Python crawler at root + Next.js dashboard in /dashboard.",
+  "scripts": {
+    "postinstall": "npm install --prefix dashboard",
+    "dev": "npm run dev --prefix dashboard",
+    "build": "npm run build --prefix dashboard",
+    "start": "npm run start --prefix dashboard"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.11.0",
+    "next": "^16.2.4",
+    "next-themes": "^0.4.6",
+    "react": "^19.2.5",
+    "server-only": "^0.0.1",
+    "tailwind-merge": "^3.5.0",
+    "tailwindcss": "^4.2.4"
+  }
+}
